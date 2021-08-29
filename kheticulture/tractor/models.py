@@ -37,7 +37,7 @@ class Tractor(models.Model):
     owner_id=models.BigIntegerField(null=True)
     engine_power=models.CharField(max_length=15, blank=True)
     no_of_wheels=models.CharField(max_length=10, blank=True)
-    location = models.PointField(default=Point(0,0))
+    location = models.PointField(srid=4326,default='SRID=3857;POINT(0.0 0.0)')
     price_perhour=models.FloatField()
     is_available= models.BooleanField(default=False)
     created = models.DateField(auto_now_add=True)
