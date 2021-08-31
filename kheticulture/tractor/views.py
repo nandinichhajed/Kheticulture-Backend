@@ -18,7 +18,7 @@ def all_tractors(request):
         return JsonResponse(all_serializer.data, safe=False)
     elif request.method == 'POST':
         types_data = JSONParser().parse(request)
-        types_serializer = TractorTypesSerializer(data=types_data)
+        types_serializer = TractorSerializer(data=types_data)
         if types_serializer.is_valid():
             types_serializer.save()
             return JsonResponse(types_serializer.data, status=status.HTTP_200_OK) 
@@ -28,35 +28,34 @@ def all_tractors(request):
         return JsonResponse({'message': '{} Tractor Types were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
 
 def add(request):
-    tractor = Tractor(request)
-    if request.POST.get('action') == 'post':
-        response = JsonResponse({'success': 'Added successfully!'})
-        return response
-
+    if request.method == 'GET':
+        data = Tractor.objects.all()
+        serializer = TractorTypesSerializer(data)
+        return JsonResponse(serializer.data, safe=False)
+    
 @api_view(['GET'])
 def get_all_tractor_within_radius(request):
-    data_request = JSONParser().parse(request)
-    latitude = data_request['latitude']
-    longitude = data_request['longitude']
-    radius = data_request['radius']
-    point = Point(longitude, latitude)    
-    tractor = Tractor.objects.filter(distance =(point, Distance(km=radius)))
-    radius_serializer = TractorSerializer(tractor, many=True)
-    return JsonResponse(radius_serializer.data)
+    if request.method == 'GET':
+        data_request = JSONParser().parse(request)
+        latitude = data_request['latitude']
+        longitude = data_request['longitude']
+        radius = data_request['location']
+        point = Point(longitude, latitude)    
+        tractor = Tractor.objects.filter(distance = (point, Distance(km=radius)))
+        radius_serializer = TractorSerializer(tractor, many=True)
+        return JsonResponse(radius_serializer.data)
 
 @api_view(['GET'])
 def get_available_tractors_within_radius(request):
     try: 
         data_request = JSONParser().parse(request)
-        radius = data_request['radius']
+        radius = data_request['location']
         tractors = Tractor.objects.filter(is_available= (Tractor.is_available, Distance(radius)))
     except Tractor.DoesNotExist: 
         return JsonResponse({'message': 'Tractor does not exist'}, status=status.HTTP_404_NOT_FOUND) 
     if request.method == 'GET': 
         serializer = TractorSerializer(tractors) 
-        return JsonResponse(serializer.data,safe=False) 
-
-'''
+        return JsonResponse(serializer.data,status = status.HTTP_200_OK) 
 
 @api_view(['GET'])
 def get_tractor_details(request,id):
@@ -80,5 +79,3 @@ def update_tractor_availabilty(request, id, availabilty):
                 serializer.save() 
                 return JsonResponse(serializer.data) 
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
-
-'''
