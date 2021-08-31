@@ -20,7 +20,8 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('tractor/', include('tractor.urls')),
+    path('tractor/', include("tractor.urls", namespace="tractor")),
+    path('orders/', include("orders.urls", namespace="orders")),
 
 ]
 

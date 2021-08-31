@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'tractor.apps.TractorConfig',
+    'orders.apps.OrdersConfig',
     'rest_framework',
     'store.apps.StoreConfig',
 ]
