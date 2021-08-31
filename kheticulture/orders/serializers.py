@@ -4,7 +4,7 @@ from .models import OrderItem
 from rest_framework import serializers
 
 class OrderSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=user.objects.all(),
+    user = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(),
                                                   many=False)
     
     class Meta:
@@ -13,12 +13,12 @@ class OrderSerializer(serializers.ModelSerializer):
                         'order_key','payment_option','billing_status','order_status')
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    order = serializers.PrimaryKeyRelatedField(queryset=order.objects.all(),
+    order = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(),
                                                   many=False)
     
-    product = serializers.PrimaryKeyRelatedField(queryset=product.objects.all(),
+    product = serializers.PrimaryKeyRelatedField(queryset=OrderItem.objects.all(),
                                                   many=False)
         
-        class Meta:
-            model = Order # this is the model that is being serialized
-            fields = ('order','product','price','quantity')
+    class Meta:
+        model = Order # this is the model that is being serialized
+        fields = ('order','product','price','quantity')

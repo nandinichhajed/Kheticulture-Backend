@@ -1,6 +1,9 @@
+from django.contrib.gis.db import models
 from decimal import Decimal
 from django.conf import settings
 from django.db import models
+import uuid
+from django.utils.translation import gettext_lazy as _
 # from store.models import Product
 
 
