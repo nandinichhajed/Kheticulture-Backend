@@ -6,7 +6,6 @@ import uuid
 from django.utils.translation import gettext_lazy as _
 # from store.models import Product
 
-
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order_user")
     full_name = models.CharField(max_length=50)
@@ -23,7 +22,18 @@ class Order(models.Model):
     order_key = models.CharField(max_length=200)
     payment_option = models.CharField(max_length=200, blank=True)
     billing_status = models.BooleanField(default=False)
-    order_status=models.CharField(max_length=50, blank=True)
+
+    RECEIVED = 1
+    IN_PROCESS = 2
+    OUT_FOR_DELIVERY = 3
+    DELIVERED = 4
+
+    order_status = (
+        (RECEIVED, u'Received'),
+        (IN_PROCESS, u'In Process'),
+        (OUT_FOR_DELIVERY, u'Out For Delivery'),
+        (DELIVERED, u'Delivered')
+    )
 
     class Meta:
         ordering = ("-created",)
