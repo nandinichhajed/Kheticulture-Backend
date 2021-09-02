@@ -9,4 +9,5 @@ urlpatterns = [
     path('add/', views.add, name='add'),
     path('radiustractor/', views.get_all_tractor_within_radius),
     path('availabletractor/', views.get_available_tractors_within_radius),
+    path('updaterating/', views.update_tractor_rating),
 ]

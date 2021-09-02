@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.contrib.gis.measure import Distance  
 from rest_framework import serializers, status
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser,ParseError
 from django.contrib.gis.geos import Point
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -45,17 +45,18 @@ def get_all_tractor_within_radius(request):
         radius_serializer = TractorSerializer(tractor, many=True)
         return JsonResponse(radius_serializer.data)
 
-@api_view(['GET'])
+@api_view(['GET'])     
 def get_available_tractors_within_radius(request):
-    try: 
-        data_request = JSONParser().parse(request)
-        radius = data_request['location']
-        tractors = Tractor.objects.filter(is_available= (Tractor.is_available, Distance(radius)))
-    except Tractor.DoesNotExist: 
-        return JsonResponse({'message': 'Tractor does not exist'}, status=status.HTTP_404_NOT_FOUND) 
-    if request.method == 'GET': 
-        serializer = TractorSerializer(tractors) 
-        return JsonResponse(serializer.data,status = status.HTTP_200_OK) 
+
+    #get tractors within a radious R from user location
+    request_data = JSONParser().parse(request)
+    lat=request_data['lat']
+    lon=request_data['lon']
+    radius=request_data['radius']
+    point = Point(lon, lat)    
+    tractors=Tractor.objects.filter(location__distance_lt=(point, Distance(km=radius)),is_available=True)
+    tractors_serializer = TractorSerializer(tractors, many=True)
+    return JsonResponse(tractors_serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_tractor_details(request,id):
@@ -78,4 +79,8 @@ def update_tractor_availabilty(request, id, availabilty):
             if serializer.is_valid(): 
                 serializer.save() 
                 return JsonResponse(serializer.data) 
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_tractor_rating(request, id):
+    pass
