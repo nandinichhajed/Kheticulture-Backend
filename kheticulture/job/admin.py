@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Job, JobImage, JobVideo
 
-# Register your models here.
+admin.site.register(Job)
+admin.site.register(JobImage)
+admin.site.register(JobVideo)
