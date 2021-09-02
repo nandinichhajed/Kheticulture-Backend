@@ -41,9 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'tractor.apps.TractorConfig',
     'orders.apps.OrdersConfig',
-    'rest_framework',
     'store.apps.StoreConfig',
     'account.apps.AccountConfig',
+    'job.apps.JobConfig',
+    'shipment.apps.ShipmentConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
