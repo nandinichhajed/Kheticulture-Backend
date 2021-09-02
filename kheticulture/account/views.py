@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from orders.models import Order
-from orders.views import user_orders
+# from orders.views import user_orders
 from store.models import Product
 
 from .forms import RegistrationForm, UserAddressForm, UserEditForm

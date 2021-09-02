@@ -32,9 +32,10 @@ class TractorSubtypesSerializer(serializers.ModelSerializer):
         fields = ('tractor_type','name')
 
 
-# class AttachmentsSerializer(serializers.ModelSerializer):
+class TractorRatingSerializer(serializers.ModelSerializer):
+    pass
 
-# class TractorAttachmentsSerializer(serializers.ModelSerializer):
+
         
         
     
