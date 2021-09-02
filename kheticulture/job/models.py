@@ -7,6 +7,9 @@ class Job(models.Model):
 	order=models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order")
 	job_start_date_time=models.DateTimeField(auto_now_add=True)
 	job_end_date_time=models.DateTimeField()
+    # fule_cunsumption
+    # update_fule_consumption
+    # price_callculation acc to hr & petrol
 	description=models.TextField(verbose_name=_("description"), help_text=_("Not Required"), blank=True)
 	#created = models.DateTimeField(auto_now_add=True)
 	
