@@ -1,118 +1,71 @@
-from django.conf import settings
-from . import models
-from .models import Order
-from .models import OrderItem
-from account.serializers import CustomerSerializer
+from store.models import Product
+from django.db.models import fields
+from .models import Order, OrderItem
 from rest_framework import serializers
-from orders.validators import (
-    UniqueUpdateValidator,
-    UniqueUpdateDBValidator,
-    UniqueUpdateStatusValidator
-)
-from tractor.serializers import TractorSerializer
+from django.conf import settings
 
-class OrderDetailCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        fields = (
-            'order', 
-            'quantity',
-            'price',
-        )
-        validators = [
-            UniqueUpdateValidator()
-        ]
+class OrderSerializer(serializers.ModelSerializer):
+    order_key = serializers.IntegerField
+    full_name = serializers.CharField(max_length=50)
+    email = serializers.EmailField(max_length=254)
+    address1 = serializers.CharField(max_length=250)
+    address2 = serializers.CharField(max_length=250)
+    city = serializers.CharField(max_length=100)
+    phone = serializers.CharField(max_length=100)
+    postal_code = serializers.CharField(max_length=20)
+    country_code = serializers.CharField(max_length=4)
+    total_paid =  serializers.DecimalField(max_digits=5, decimal_places=2)
+    order_status = serializers.CharField(max_length = 20)
+    
 
-
-class OrderDetailUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        fields = (
-            'order', 
-            'quantity',
-            'price',
-        )
-    validators = [
-        UniqueUpdateStatusValidator(),
-        UniqueUpdateDBValidator()
-    ]
-
-
-class OrderDetailRetrieveSerializer(serializers.ModelSerializer):
-    tractor = TractorSerializer()
-    t_type = serializers.SerializerMethodField()
-
-    class Meta:
-        model = OrderItem
-        fields = (
-            'order', 
-            'quantity',
-            'price',
-        )
-
-    def get_size(self, obj):
-        return obj.get_size_display()
-
-
-class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            'order_key',
             'full_name',
-            'address1', 
+            'email',
+            'address1',
             'address2',
             'city',
             'phone',
-            'created',
-            'updated',
+            'postal_code',
+            'country_code',
             'total_paid',
-            'order_key',
-            'billing_status',
             'order_status'
         )
+    def create(self, validated_data):
+        return Order.objects.create(**validated_data)
 
-    def get_status(self, obj):
-        return obj.get_status_display()
+    def update(self, instance, validated_data):
+            instance.order_status = validated_data.get('order_status')
+            instance.save()
+            return instance
 
 
-class OrderRetrieveSerializer(serializers.ModelSerializer):
-    customer = CustomerSerializer()
-    details = OrderDetailRetrieveSerializer(many=True, read_only=True)
-    status = serializers.SerializerMethodField()
+class OrderItemSerializer(serializers.HyperlinkedModelSerializer):
+
+    items = serializers.PrimaryKeyRelatedField(queryset = Order.objects.all(),
+                        many = False)
+    order_items = serializers.PrimaryKeyRelatedField(queryset = Product.objects.all(),
+    many = False)
+
+    class Meta:
+        model = OrderItem
+        fields = (
+            'items',
+            'order_items',
+            'price',
+            'quantity'
+        )
+
+class OrderBillingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = (
-            'id',
-            'number',
-            'customer',
-            'status',
-            'details'
-        )
+        fields = ('order_key','billing_status')
 
-    def get_status(self, obj):
-        return obj.get_status_display()
-
-
-class OrderStatusRetrieveSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Order
-        fields = (
-            'id',
-            'status',
-        )
-
-    def get_status(self, obj):
-        return obj.get_status_display()
-
-
-class OrderStatusUpdateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Order
-        fields = (
-            'id',
-            'status',
-        )
+    def update(self, instance, validated_data):
+            instance.order_status = validated_data.get('billing_status')
+            instance.save()
+            return instance
+    
