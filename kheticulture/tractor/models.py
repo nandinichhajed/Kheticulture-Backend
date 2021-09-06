@@ -4,6 +4,7 @@ import uuid
 from django.contrib.gis.geos import Point
 from account.models import Customer
 from orders.models import Order
+from store.models import Product
 
 class Tractor_Types(models.Model):
     id= models.AutoField(primary_key=True)

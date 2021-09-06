@@ -4,7 +4,9 @@ from .models import Attachments
 from .models import Tractor_Types
 from .models import Tractor_Attachments
 from .models import Tractor_Sub_Types_Activities
+from .models import User_Rating_Review
 from . import models
+
 
 class TractorSerializer(serializers.ModelSerializer):
     tractor_type = serializers.PrimaryKeyRelatedField(queryset=Tractor_Types.objects.all(),
@@ -32,8 +34,19 @@ class TractorSubtypesSerializer(serializers.ModelSerializer):
         fields = ('tractor_type','name')
 
 
-class TractorRatingSerializer(serializers.ModelSerializer):
-    pass
+# class TractorRatingSerializer(serializers.ModelSerializer):
+#     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),
+#                                                   many=False)
+
+#     tractor = serializers.PrimaryKeyRelatedField(queryset=Tractors.objects.all(),
+#                                                   many=False)
+
+#     order = serializers.PrimaryKeyRelatedField(queryset=Orders.objects.all(),
+#                                                   many=False)
+
+#     class Meta:
+#         model = TractorRating # this is the model that is being serialized
+#         fields = ('user','tractor','order','rating','review')
 
 
         
