@@ -32,31 +32,29 @@ def add(request):
         data = Tractor.objects.all()
         serializer = TractorTypesSerializer(data)
         return JsonResponse(serializer.data, safe=False)
-    
-@api_view(['GET'])
-def get_all_tractor_within_radius(request):
-    if request.method == 'GET':
-        data_request = JSONParser().parse(request)
-        latitude = data_request['latitude']
-        longitude = data_request['longitude']
-        radius = data_request['location']
-        point = Point(longitude, latitude)    
-        tractor = Tractor.objects.filter(distance = (point, Distance(km=radius)))
-        radius_serializer = TractorSerializer(tractor, many=True)
-        return JsonResponse(radius_serializer.data)
 
 @api_view(['GET'])     
 def get_available_tractors_within_radius(request):
-
-    #get tractors within a radious R from user location
-    request_data = JSONParser().parse(request)
-    lat=request_data['lat']
-    lon=request_data['lon']
-    radius=request_data['radius']
-    point = Point(lon, lat)    
-    tractors=Tractor.objects.filter(location__distance_lt=(point, Distance(km=radius)),is_available=True)
-    tractors_serializer = TractorSerializer(tractors, many=True)
+    if request.method == 'GET':
+        #get tractors within a radious R from user location
+        request_data = JSONParser().parse(request)
+        lat=request_data['lat']
+        lon=request_data['lon']
+        radius=request_data['radius']
+        point = Point(lon, lat)    
+        tractors=Tractor.objects.filter(location__distance_lt=(point, Distance(km=radius)),is_available=True)
+        tractors_serializer = TractorSerializer(tractors, many=True)
     return JsonResponse(tractors_serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_all_tractor_within_radius(request):
+    radius = Tractor.objects.filter(Tractor.location)
+    if not radius:
+        return Response({"message": "User is not Available","success":False},status=status.HTTP_400_BAD_REQUEST)
+    
+    query_set = Tractor.gis.filter(location__dwithin= radius)
+    serializer = TractorSerializer(data=query_set,many=True,context={'request': request})
+    return JsonResponse(serializer.data)
 
 @api_view(['GET'])
 def get_tractor_details(request,id):
