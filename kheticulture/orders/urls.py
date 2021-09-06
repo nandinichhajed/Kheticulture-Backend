@@ -5,5 +5,5 @@ app_name = 'orders'
 
 urlpatterns = [
     path('', CreateOrder.as_view()),
-    path('paymentstatus/', UpdatePayment.as_view())
+    path('paymentstatus/', UpdatePayment.as_view()),
 ]

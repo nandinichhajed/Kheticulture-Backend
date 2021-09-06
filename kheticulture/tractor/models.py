@@ -2,6 +2,8 @@ from django.contrib.gis.db import models
 from django.utils.translation import gettext_lazy as _
 import uuid
 from django.contrib.gis.geos import Point
+from account.models import Customer
+from orders.models import Order
 
 class Tractor_Types(models.Model):
     id= models.AutoField(primary_key=True)
@@ -69,6 +71,13 @@ class Tractor_Attachments(models.Model):
     atach_id=models.ForeignKey(Attachments, on_delete=models.CASCADE)
     def __str__(self):
         return self.name
+
+class User_Rating_Review(models.Model):
+    user=models.ForeignKey(Customer,on_delete=models.CASCADE)
+    tractor=models.ForeignKey(Tractor,on_delete=models.CASCADE)
+    order=models.ForeignKey(Order,on_delete=models.CASCADE)
+    rating=models.IntegerField(blank=True)
+    review=models.TextField(verbose_name=_("description"), help_text=_("Not Required"), blank=True)
 
     
 
