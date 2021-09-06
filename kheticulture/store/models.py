@@ -77,12 +77,13 @@ class Product(models.Model):
          unique=True,
          default = uuid.uuid4,
          editable = False)
-    product_type = models.ForeignKey(ProductType, on_delete=models.RESTRICT)
-    category = models.ForeignKey(Category, on_delete=models.RESTRICT)
+    product_type = models.ForeignKey(ProductType, on_delete=models.RESTRICT, default="")
+    category = models.ForeignKey(Category, on_delete=models.RESTRICT, default="")
     title = models.CharField(
         verbose_name=_("title"),
         help_text=_("Required"),
         max_length=255,
+        default=""
     )
     description = models.TextField(verbose_name=_("description"), help_text=_("Not Required"), blank=True)
     slug = models.SlugField(max_length=255)

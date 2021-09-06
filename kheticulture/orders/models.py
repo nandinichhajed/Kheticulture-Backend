@@ -1,13 +1,13 @@
-from django.contrib.gis.db import models
 from decimal import Decimal
+
 from django.conf import settings
 from django.db import models
-import uuid
-from django.utils.translation import gettext_lazy as _
-# from store.models import Product
+from store.models import Product
+
 
 class Order(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order_user")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order_user", null=True, blank=True)
+    order_key = models.AutoField(primary_key=True)
     full_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=254, blank=True)
     address1 = models.CharField(max_length=250)
@@ -19,20 +19,25 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     total_paid = models.DecimalField(max_digits=5, decimal_places=2)
-    order_key = models.CharField(max_length=200)
     payment_option = models.CharField(max_length=200, blank=True)
     billing_status = models.BooleanField(default=False)
+    
+    ORDER_PLACED = 'Order Placed'
+    ACCEPTED = 'Order Accepted'
+    TRANSIT = 'In Transit'
+    DELIVERED = 'Delivered'
 
-    RECEIVED = 1
-    IN_PROCESS = 2
-    OUT_FOR_DELIVERY = 3
-    DELIVERED = 4
-
-    order_status = (
-        (RECEIVED, u'Received'),
-        (IN_PROCESS, u'In Process'),
-        (OUT_FOR_DELIVERY, u'Out For Delivery'),
+    ORDER_STATUSES = (
+        (ORDER_PLACED, u'Order Placed'),
+        (ACCEPTED, u'Order Accepted'),
+        (TRANSIT, u'In Transit'),
         (DELIVERED, u'Delivered')
+    )
+
+    order_status = models.CharField(
+        choices=ORDER_STATUSES,
+        max_length=20,
+        default=ORDER_PLACED
     )
 
     class Meta:
@@ -44,7 +49,7 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
-    # product = models.ForeignKey(Product, related_name="order_items", on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, related_name="order_items", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
 

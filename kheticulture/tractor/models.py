@@ -9,7 +9,7 @@ class Tractor_Types(models.Model):
          unique=True,
          default = uuid.uuid4,
          editable = False)
-    name=models.CharField(max_length=50, blank=True)
+    name=models.CharField(max_length=50, blank=True, default="")
     created = models.DateField(auto_now_add=True,blank=True)
 
     def __str__(self):
@@ -61,7 +61,7 @@ class Attachments(models.Model):
     def __str__(self):
         return self.name    
       
-        
+
 class Tractor_Attachments(models.Model):
     id=models.BigIntegerField(primary_key=True)
     #tractor_id=models.BigIntegerField(primary_key=True)
