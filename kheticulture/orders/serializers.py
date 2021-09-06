@@ -1,6 +1,6 @@
 from store.models import Product
 from django.db.models import fields
-from .models import Order, OrderItem
+from .models import Order, OrderItem, OrderRating
 from rest_framework import serializers
 from django.conf import settings
 
@@ -59,13 +59,17 @@ class OrderItemSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 class OrderBillingSerializer(serializers.ModelSerializer):
+    order_key = serializers.IntegerField
+    total_paid =  serializers.DecimalField(max_digits=5, decimal_places=2)
+    billing_status = serializers.BooleanField()
 
     class Meta:
         model = Order
-        fields = ('order_key','billing_status')
+        fields = ('order_key','total_paid','billing_status')
 
     def update(self, instance, validated_data):
-            instance.order_status = validated_data.get('billing_status')
+            instance.billing_status = validated_data.get('billing_status')
             instance.save()
             return instance
+
     
