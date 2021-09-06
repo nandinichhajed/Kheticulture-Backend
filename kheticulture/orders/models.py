@@ -1,9 +1,6 @@
-from decimal import Decimal
-
 from django.conf import settings
 from django.db import models
 from store.models import Product
-
 
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="order_user", null=True, blank=True)
@@ -52,6 +49,21 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, related_name="order_items", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return str(self.id)
+
+class OrderRating(models.Model):
+    id = models.AutoField(primary_key=True)
+    order=models.ForeignKey(Order,on_delete=models.CASCADE)
+    RATE_CHOICES = (
+        (4, "excellent"),
+        (3, "very good"),
+        (2, "good"),
+        (1, "bad"),
+    )
+    rating = models.PositiveSmallIntegerField(choices=RATE_CHOICES)
+    review=models.TextField(verbose_name=("description"), help_text=("Not Required"), blank=True)
 
     def __str__(self):
         return str(self.id)
