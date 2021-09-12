@@ -34,19 +34,19 @@ class TractorSubtypesSerializer(serializers.ModelSerializer):
         fields = ('tractor_type','name')
 
 
-# class TractorRatingSerializer(serializers.ModelSerializer):
-#     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),
-#                                                   many=False)
+class UserRatingReviewSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User_Rating_Review.objects.all(),
+                                                  many=False)
 
-#     tractor = serializers.PrimaryKeyRelatedField(queryset=Tractors.objects.all(),
-#                                                   many=False)
+    tractor = serializers.PrimaryKeyRelatedField(queryset=User_Rating_Review.objects.all(),
+                                                  many=False)
 
-#     order = serializers.PrimaryKeyRelatedField(queryset=Orders.objects.all(),
-#                                                   many=False)
+    order = serializers.PrimaryKeyRelatedField(queryset=User_Rating_Review.objects.all(),
+                                                  many=False)
 
-#     class Meta:
-#         model = TractorRating # this is the model that is being serialized
-#         fields = ('user','tractor','order','rating','review')
+    class Meta:
+        model = User_Rating_Review # this is the model that is being serialized
+        fields = ('user','tractor','order','rating','review')
 
 
         

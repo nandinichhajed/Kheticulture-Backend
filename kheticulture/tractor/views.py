@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import TractorSerializer, TractorTypesSerializer
+from .serializers import TractorSerializer, TractorTypesSerializer, TractorSubtypesSerializer, UserRatingReviewSerializer
 from .models import Tractor, Tractor_Types
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404, render
@@ -81,4 +81,8 @@ def update_tractor_availabilty(request, id, availabilty):
 
 @api_view(['PUT'])
 def update_tractor_rating(request, id):
-    pass
+    rating = request.data
+    serializer = OrderSerializer(data = rating)
+    if serializer.is_valid(raise_exception=True):
+        saved_rating = serializer.save()
+        return Response({"success": "Tractor rating '{}' created successfully".format(saved_rating.order)})
