@@ -44,4 +44,4 @@ def create_order_review(request):
     serializer = OrderSerializer(data = rating)
     if serializer.is_valid(raise_exception=True):
         saved_rating = serializer.save()
-        return Response({"success": "Order rating '{}' created successfully".format(saved_rating.order_key)})
+        return Response({"success": "Tractor rating '{}' created successfully".format(saved_rating.order_key)})
