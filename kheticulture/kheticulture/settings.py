@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'job.apps.JobConfig',
     'shipment.apps.ShipmentConfig',
     'rest_framework',
+    'mptt'
 ]
 
 MIDDLEWARE = [
