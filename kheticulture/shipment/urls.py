@@ -7,3 +7,4 @@ app_name = 'shipment'
 urlpatterns = [
     path('shipmentstatus/<str:order>/', views.update_shipment_status , name='shipmentstatus'),
 ]
+
