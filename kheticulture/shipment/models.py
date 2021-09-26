@@ -29,6 +29,3 @@ class Shippment_Tracking(models.Model):
 
     def __str__(self):
         return str(self.curr_location)
-   
-
-# Create your models here.
