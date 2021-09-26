@@ -1,4 +1,3 @@
-
 from store.models import Product
 from django.db.models import fields
 from .models import Shipment, Shippment_Tracking
