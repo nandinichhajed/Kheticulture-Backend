@@ -1,4 +1,5 @@
-from .serializers import OrderSerializer, OrderBillingSerializer, OrderStatusSerializer
+from .serializers import *
+from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -42,8 +43,12 @@ def create_order_review(request):
         saved_rating = serializer.save()
         return Response({"success": "Tractor rating '{}' created successfully".format(saved_rating.order_key)})
 
-def get_order_history(request, order_key):
-    pass
+class OrderHistory(APIView):
+
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user).order_by('-order_key')
+        serializer = OrderSerializer(orders, many = True)
+        return Response(serializer.data)
 
 def get_booking_request(request, user):
     pass

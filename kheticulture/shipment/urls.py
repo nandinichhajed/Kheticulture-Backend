@@ -5,6 +5,7 @@ from . import views
 app_name = 'shipment'
 
 urlpatterns = [
-    path('shipmentstatus/<str:order>/', views.update_shipment_status , name='shipmentstatus'),
+    path('', views.CreateShipment.as_view()),
+    path('shipmentstatus/', views.update_shipment_status , name='shipmentstatus'),
 ]
 

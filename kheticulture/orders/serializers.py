@@ -65,7 +65,7 @@ class OrderBillingSerializer(serializers.ModelSerializer):
 
 class OrderStatusSerializer(serializers.ModelSerializer):
     order_status = serializers.CharField(max_length = 20)
-    status_key = serializers.PrimaryKeyRelatedField(queryset = Order.objects.get('order_key'))
+    status_key = serializers.PrimaryKeyRelatedField(queryset = Order.objects.all(), many=True)
 
     class Meta:
         model = OrderStatus
