@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 class Shipment(models.Model):
     order=models.ForeignKey(Order,related_name='Order',on_delete=models.CASCADE)
     shipment_status=models.CharField(max_length=150,blank=False)
-    shipment_date=models.DateTimeField()
+    shipment_date=models.DateTimeField(auto_now_add=True)
     dispatch_mode=models.CharField(max_length=150,blank=True)
     delivery_status=models.CharField(max_length=150,blank=False)
     created = models.DateTimeField(auto_now_add=True)
