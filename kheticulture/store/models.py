@@ -5,8 +5,11 @@ from django.utils.translation import gettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 import uuid
 
+
 class Category(MPTTModel):
-    """ Category Table implimented with MPTT. """
+    """
+    Category Table implimented with MPTT.
+    """
 
     name = models.CharField(
         verbose_name=_("Category Name"),
@@ -31,8 +34,12 @@ class Category(MPTTModel):
     def __str__(self):
         return self.name
 
+
 class ProductType(models.Model):
-    """ ProductType Table will provide a list of the different types of products that are for sale. """
+    """
+    ProductType Table will provide a list of the different types
+    of products that are for sale.
+    """
 
     name = models.CharField(verbose_name=_("Product Name"), help_text=_("Required"), max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
@@ -46,7 +53,10 @@ class ProductType(models.Model):
 
 
 class ProductSpecification(models.Model):
-    """ The Product Specification Table contains product specifiction or features for the product types. """
+    """
+    The Product Specification Table contains product
+    specifiction or features for the product types.
+    """
 
     product_type = models.ForeignKey(ProductType, on_delete=models.RESTRICT)
     name = models.CharField(verbose_name=_("Name"), help_text=_("Required"), max_length=255)
@@ -60,17 +70,20 @@ class ProductSpecification(models.Model):
 
 
 class Product(models.Model):
-    """ The Product table contining all product items. """
+    """
+    The Product table contining all product items.
+    """
     uuid= models.UUIDField(
          unique=True,
          default = uuid.uuid4,
          editable = False)
-    product_type = models.ForeignKey(ProductType, on_delete=models.RESTRICT)
-    category = models.ForeignKey(Category, on_delete=models.RESTRICT)
+    product_type = models.ForeignKey(ProductType, on_delete=models.RESTRICT, default="")
+    category = models.ForeignKey(Category, on_delete=models.RESTRICT, default="")
     title = models.CharField(
         verbose_name=_("title"),
         help_text=_("Required"),
         max_length=255,
+        default=""
     )
     description = models.TextField(verbose_name=_("description"), help_text=_("Not Required"), blank=True)
     slug = models.SlugField(max_length=255)
@@ -170,8 +183,6 @@ class ProductImage(models.Model):
 
 
         
-
-
 
 
 

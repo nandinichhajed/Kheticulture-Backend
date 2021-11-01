@@ -41,8 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'tractor.apps.TractorConfig',
     'orders.apps.OrdersConfig',
-    'rest_framework',
     'store.apps.StoreConfig',
+    'account.apps.AccountConfig',
+    'job.apps.JobConfig',
+    'shipment.apps.ShipmentConfig',
+    'rest_framework',
+    'mptt'
 ]
 
 MIDDLEWARE = [
@@ -75,6 +79,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kheticulture.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+    )
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -89,7 +99,6 @@ DATABASES = {
         'PORT': '',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -134,4 +143,10 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom user model
+AUTH_USER_MODEL = "account.Customer"
+LOGIN_REDIRECT_URL = "/account/dashboard"
+LOGIN_URL = "/account/login/"
 
+# Email setting
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

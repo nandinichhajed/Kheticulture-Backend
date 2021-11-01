@@ -22,6 +22,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('tractor/', include("tractor.urls", namespace="tractor")),
     path('orders/', include("orders.urls", namespace="orders")),
+    path('job/', include("job.urls", namespace="job")),
+    path('shipment/', include("shipment.urls", namespace="shipent")),
+    path('account/', include("account.urls", namespace="account")),
+    path('store/', include("store.urls", namespace="store")),
 
 ]
-

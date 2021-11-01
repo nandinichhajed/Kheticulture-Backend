@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import TractorSerializer, TractorTypesSerializer
+from .serializers import TractorSerializer, TractorTypesSerializer, TractorSubtypesSerializer, UserRatingReviewSerializer
 from .models import Tractor, Tractor_Types
 from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404, render
@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.contrib.gis.measure import Distance  
 from rest_framework import serializers, status
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser,ParseError
 from django.contrib.gis.geos import Point
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -32,30 +32,29 @@ def add(request):
         data = Tractor.objects.all()
         serializer = TractorTypesSerializer(data)
         return JsonResponse(serializer.data, safe=False)
-    
-@api_view(['GET'])
-def get_all_tractor_within_radius(request):
+
+@api_view(['GET'])     
+def get_available_tractors_within_radius(request):
     if request.method == 'GET':
-        data_request = JSONParser().parse(request)
-        latitude = data_request['latitude']
-        longitude = data_request['longitude']
-        radius = data_request['location']
-        point = Point(longitude, latitude)    
-        tractor = Tractor.objects.filter(distance = (point, Distance(km=radius)))
-        radius_serializer = TractorSerializer(tractor, many=True)
-        return JsonResponse(radius_serializer.data)
+        #get tractors within a radious R from user location
+        request_data = JSONParser().parse(request)
+        lat=request_data['lat']
+        lon=request_data['lon']
+        radius=request_data['radius']
+        point = Point(lon, lat)    
+        tractors=Tractor.objects.filter(location__distance_lt=(point, Distance(km=radius)),is_available=True)
+        tractors_serializer = TractorSerializer(tractors, many=True)
+    return JsonResponse(tractors_serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-def get_available_tractors_within_radius(request):
-    try: 
-        data_request = JSONParser().parse(request)
-        radius = data_request['location']
-        tractors = Tractor.objects.filter(is_available= (Tractor.is_available, Distance(radius)))
-    except Tractor.DoesNotExist: 
-        return JsonResponse({'message': 'Tractor does not exist'}, status=status.HTTP_404_NOT_FOUND) 
-    if request.method == 'GET': 
-        serializer = TractorSerializer(tractors) 
-        return JsonResponse(serializer.data,status = status.HTTP_200_OK) 
+def get_all_tractor_within_radius(request):
+    radius = Tractor.objects.filter(Tractor.location)
+    if not radius:
+        return Response({"message": "User is not Available","success":False},status=status.HTTP_400_BAD_REQUEST)
+    
+    query_set = Tractor.gis.filter(location__dwithin= radius)
+    serializer = TractorSerializer(data=query_set,many=True,context={'request': request})
+    return JsonResponse(serializer.data)
 
 @api_view(['GET'])
 def get_tractor_details(request,id):
@@ -78,4 +77,12 @@ def update_tractor_availabilty(request, id, availabilty):
             if serializer.is_valid(): 
                 serializer.save() 
                 return JsonResponse(serializer.data) 
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_tractor_rating(request, id):
+    rating = request.data
+    serializer = OrderSerializer(data = rating)
+    if serializer.is_valid(raise_exception=True):
+        saved_rating = serializer.save()
+        return Response({"success": "Tractor rating '{}' created successfully".format(saved_rating.order)})

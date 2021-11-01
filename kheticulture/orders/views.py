@@ -1,45 +1,58 @@
-from django.http.response import JsonResponse
-from .serializers import OrderSerializer, OrderItemSerializer
-from django.shortcuts import get_object_or_404, render
-from tractor.models import Tractor
-from .models import Order, OrderItem
-from rest_framework.decorators import api_view
-from django.contrib.gis.measure import Distance  
-from django.contrib.gis.measure import Distance  
-from rest_framework import serializers, status
+from .serializers import *
+from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
-from django.contrib.gis.geos import Point
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from .models import Order, OrderRating
 
-def add(request):
-    #basket = Basket(request)
-    tractor=Tractor(request)
-    if request.POST.get('action') == 'post':
+class CreateOrder(APIView):
 
-        order_key = request.POST.get('order_key')
-        user_id = request.user.id
-        baskettotal = basket.get_total_price()
+    def get(self, request):
+        orders = Order.objects.all()
+        serializer = OrderSerializer(orders, many = True)
+        return Response(serializer.data)
 
-        # Check if order exists
-        if Order.objects.filter(order_key=order_key).exists():
-            pass
-        else:
-            order = Order.objects.create(user_id=user_id, full_name='name', address1='add1',
-                                address2='add2', total_paid=baskettotal, order_key=order_key)
-            order_id = order.pk
+    def post(self, request):
+        order = request.data
+        serializer = OrderSerializer(data = order)
+        if serializer.is_valid(raise_exception=True):
+            order_saved = serializer.save()
+        return Response({"success": "Order '{}' created successfully".format(order_saved.order_key)})
 
-            #for item in basket:
-            OrderItem.objects.create(order_id=order_id, product=tractor, price='', quantity=1)
+@api_view(['PUT',])
+def update_order_status(request, order_key):
+    key = Order.objects.get(order_key = order_key)
+    serializer = OrderStatusSerializer(instance=key, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
 
-        response = JsonResponse({'success': 'Return something'})
-        return response
+@api_view(['PUT',])
+def update_payment_status(request, order_key):
+    key = Order.objects.get(order_key = order_key)
+    serializer = OrderBillingSerializer(instance=key, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
 
+@api_view(['POST',])
+def create_order_review(request):
+    rating = request.data
+    serializer = OrderSerializer(data = rating)
+    if serializer.is_valid(raise_exception=True):
+        saved_rating = serializer.save()
+        return Response({"success": "Tractor rating '{}' created successfully".format(saved_rating.order_key)})
 
-def payment_confirmation(data):
-    Order.objects.filter(order_key=data).update(billing_status=True)
+class OrderHistory(APIView):
 
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user).order_by('-order_key')
+        serializer = OrderSerializer(orders, many = True)
+        return Response(serializer.data)
 
-def user_orders(request):
-    user_id = request.user.id
-    orders = Order.objects.filter(user_id=user_id).filter(billing_status=True)
-    return orders
+def get_booking_request(request, user):
+    pass
+
+def get_booking_details(request, order_key):
+    pass
+
